@@ -13,13 +13,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  table_calendar: ^3.0.0
-  intl: ^0.18.0
-  shared_preferences: ^2.2.0
-
-
-
-
+  table_calendar: ^3.0.8
+  intl: any
+  shared_preferences: any
+  flutter_local_notifications: ^15.1.1
+  csv: ^5.0.2
+  path_provider: ^2.1.1
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:
