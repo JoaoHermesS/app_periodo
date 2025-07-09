@@ -143,27 +143,14 @@ class _TelaSintomasState extends State<TelaSintomas> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Botão de voltar + título
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.pink),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Monitorar Dia ${widget.diaSelecionado.day}/${widget.diaSelecionado.month}",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                "Monitorar Dia ${widget.diaSelecionado.day}/${widget.diaSelecionado.month}",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-
               secao("Fluxo Menstrual", [
                 botaoSelecao(
                   "Leve",
@@ -190,7 +177,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
                   aoClicar: () => setState(() => fluxoSelecionado = "Muito"),
                 ),
               ]),
-
               secao("Dores/Sintomas", [
                 botaoSelecao(
                   "Sem Dor",
@@ -237,7 +223,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
                       }),
                 ),
               ]),
-
               secao("Coleta", [
                 botaoSelecao(
                   "Absorvente",
@@ -267,7 +252,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
                       () => setState(() => coletaSelecionada = "Calcinha"),
                 ),
               ]),
-
               secao("Relação Sexual", [
                 botaoSelecao(
                   "Protegido",
@@ -298,7 +282,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
                       () => setState(() => relacaoSelecionada = "Não houve"),
                 ),
               ]),
-
               SizedBox(height: 24),
               Center(
                 child: Column(
