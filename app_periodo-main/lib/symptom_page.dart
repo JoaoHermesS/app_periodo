@@ -4,14 +4,10 @@ class TelaSintomas extends StatefulWidget {
   final DateTime diaSelecionado;
   final Map<String, dynamic>? dadosIniciais;
 
-  // Callback para remover o dia, passada do main.dart
-  final VoidCallback? onRemover;
-
   const TelaSintomas({
     super.key,
     required this.diaSelecionado,
     this.dadosIniciais,
-    this.onRemover,
   });
 
   @override
@@ -27,12 +23,10 @@ class _TelaSintomasState extends State<TelaSintomas> {
   @override
   void initState() {
     super.initState();
-
     if (widget.dadosIniciais != null) {
       fluxoSelecionado = widget.dadosIniciais!['fluxo'];
       coletaSelecionada = widget.dadosIniciais!['coleta'];
       relacaoSelecionada = widget.dadosIniciais!['relacao'];
-
       final sintomas = widget.dadosIniciais!['sintomas'];
       if (sintomas is List) {
         sintomasSelecionados = sintomas.map((e) => e.toString()).toSet();
@@ -53,13 +47,14 @@ class _TelaSintomasState extends State<TelaSintomas> {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: selecionado ? Colors.pink : Colors.pink.shade100,
+              color: selecionado ? Colors.pink : Colors.grey[850],
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.pinkAccent.withOpacity(0.3)),
             ),
-            child: Icon(icone, color: Colors.black),
+            child: Icon(icone, color: Colors.white, size: 28),
           ),
           SizedBox(height: 4),
-          Text(texto, style: TextStyle(color: Colors.white)),
+          Text(texto, style: TextStyle(color: Colors.white70)),
         ],
       ),
     );
@@ -75,6 +70,7 @@ class _TelaSintomasState extends State<TelaSintomas> {
           style: TextStyle(
             color: Colors.pinkAccent,
             fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
         ),
         SizedBox(height: 8),
@@ -83,15 +79,40 @@ class _TelaSintomasState extends State<TelaSintomas> {
     );
   }
 
+  void _salvarDados() {
+    if (fluxoSelecionado == null &&
+        sintomasSelecionados.isEmpty &&
+        coletaSelecionada == null &&
+        relacaoSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Selecione pelo menos um dado antes de salvar.'),
+          backgroundColor: Colors.pink,
+        ),
+      );
+      return;
+    }
+
+    Navigator.pop(context, {
+      'fluxo': fluxoSelecionado,
+      'sintomas': sintomasSelecionados.toList(),
+      'coleta': coletaSelecionada,
+      'relacao': relacaoSelecionada,
+    });
+  }
+
   Future<void> _confirmarRemocao() async {
     final confirmado = await showDialog<bool>(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: Colors.black,
-            title: Text('Remover dia', style: TextStyle(color: Colors.pink)),
+            title: Text(
+              'Remover registro',
+              style: TextStyle(color: Colors.pink),
+            ),
             content: Text(
-              'Deseja realmente remover o registro do dia ${widget.diaSelecionado.day}/${widget.diaSelecionado.month}/${widget.diaSelecionado.year}?',
+              'Deseja realmente remover os dados do dia ${widget.diaSelecionado.day}/${widget.diaSelecionado.month}?',
               style: TextStyle(color: Colors.white),
             ),
             actions: [
@@ -108,7 +129,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
     );
 
     if (confirmado == true) {
-      // Retorna uma flag especial para remover o dia no main
       Navigator.pop(context, 'remover');
     }
   }
@@ -118,51 +138,60 @@ class _TelaSintomasState extends State<TelaSintomas> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Monitoramento",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              // Botão de voltar + título
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.pink),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Monitorar Dia ${widget.diaSelecionado.day}/${widget.diaSelecionado.month}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
-              // Fluxo
-              secao("Fluxo sanguíneo", [
+              secao("Fluxo Menstrual", [
                 botaoSelecao(
                   "Leve",
-                  Icons.water_drop,
+                  Icons.opacity,
                   selecionado: fluxoSelecionado == "Leve",
                   aoClicar: () => setState(() => fluxoSelecionado = "Leve"),
                 ),
                 botaoSelecao(
                   "Médio",
-                  Icons.water_drop,
+                  Icons.opacity,
                   selecionado: fluxoSelecionado == "Médio",
                   aoClicar: () => setState(() => fluxoSelecionado = "Médio"),
                 ),
                 botaoSelecao(
                   "Intenso",
-                  Icons.water_drop,
+                  Icons.opacity,
                   selecionado: fluxoSelecionado == "Intenso",
                   aoClicar: () => setState(() => fluxoSelecionado = "Intenso"),
                 ),
                 botaoSelecao(
-                  "Super intenso",
-                  Icons.water_drop,
-                  selecionado: fluxoSelecionado == "Super intenso",
-                  aoClicar:
-                      () => setState(() => fluxoSelecionado = "Super intenso"),
+                  "Muito",
+                  Icons.opacity,
+                  selecionado: fluxoSelecionado == "Muito",
+                  aoClicar: () => setState(() => fluxoSelecionado = "Muito"),
                 ),
               ]),
 
-              // Sintomas
-              secao("Sintomas/Dores", [
+              secao("Dores/Sintomas", [
                 botaoSelecao(
                   "Sem Dor",
                   Icons.sentiment_satisfied,
@@ -209,22 +238,20 @@ class _TelaSintomasState extends State<TelaSintomas> {
                 ),
               ]),
 
-              // Coleta
-              secao("Método de Coleta", [
+              secao("Coleta", [
                 botaoSelecao(
                   "Absorvente",
-                  Icons.local_hospital,
+                  Icons.sanitizer,
                   selecionado: coletaSelecionada == "Absorvente",
                   aoClicar:
                       () => setState(() => coletaSelecionada = "Absorvente"),
                 ),
                 botaoSelecao(
-                  "Protetor diário",
+                  "Protetor",
                   Icons.layers,
-                  selecionado: coletaSelecionada == "Protetor diário",
+                  selecionado: coletaSelecionada == "Protetor",
                   aoClicar:
-                      () =>
-                          setState(() => coletaSelecionada = "Protetor diário"),
+                      () => setState(() => coletaSelecionada = "Protetor"),
                 ),
                 botaoSelecao(
                   "Coletor",
@@ -241,7 +268,6 @@ class _TelaSintomasState extends State<TelaSintomas> {
                 ),
               ]),
 
-              // Relação
               secao("Relação Sexual", [
                 botaoSelecao(
                   "Protegido",
@@ -251,30 +277,29 @@ class _TelaSintomasState extends State<TelaSintomas> {
                       () => setState(() => relacaoSelecionada = "Protegido"),
                 ),
                 botaoSelecao(
-                  "Desprotegido",
+                  "Sem proteção",
                   Icons.warning,
-                  selecionado: relacaoSelecionada == "Desprotegido",
+                  selecionado: relacaoSelecionada == "Sem proteção",
                   aoClicar:
-                      () => setState(() => relacaoSelecionada = "Desprotegido"),
+                      () => setState(() => relacaoSelecionada = "Sem proteção"),
                 ),
                 botaoSelecao(
                   "Feito a sós",
-                  Icons.pan_tool,
+                  Icons.self_improvement,
                   selecionado: relacaoSelecionada == "Feito a sós",
                   aoClicar:
                       () => setState(() => relacaoSelecionada = "Feito a sós"),
                 ),
                 botaoSelecao(
-                  "Não ocorreu",
-                  Icons.sentiment_dissatisfied,
-                  selecionado: relacaoSelecionada == "Não ocorreu",
+                  "Não houve",
+                  Icons.cancel,
+                  selecionado: relacaoSelecionada == "Não houve",
                   aoClicar:
-                      () => setState(() => relacaoSelecionada = "Não ocorreu"),
+                      () => setState(() => relacaoSelecionada = "Não houve"),
                 ),
               ]),
 
-              Spacer(),
-
+              SizedBox(height: 24),
               Center(
                 child: Column(
                   children: [
@@ -286,38 +311,18 @@ class _TelaSintomasState extends State<TelaSintomas> {
                           vertical: 12,
                         ),
                       ),
-                      onPressed: () {
-                        // Se não tiver fluxo selecionado, talvez queira remover o dia
-                        if (fluxoSelecionado == null) {
-                          // Perguntar se quer remover mesmo sem fluxo
-                          _confirmarRemocao();
-                        } else {
-                          Navigator.pop(context, {
-                            'fluxo': fluxoSelecionado,
-                            'sintomas': sintomasSelecionados.toList(),
-                            'coleta': coletaSelecionada,
-                            'relacao': relacaoSelecionada,
-                          });
-                        }
-                      },
+                      onPressed: _salvarDados,
                       child: Text(
                         "Salvar",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
                     SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[800],
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 12,
-                        ),
-                      ),
+                    TextButton(
                       onPressed: _confirmarRemocao,
                       child: Text(
-                        "Remover dia",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        "Remover este dia",
+                        style: TextStyle(color: Colors.white70),
                       ),
                     ),
                   ],
